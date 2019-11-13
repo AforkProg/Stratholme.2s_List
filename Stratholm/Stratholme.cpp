@@ -18,7 +18,13 @@ public:
 	}
 	~clList()
 	{
-
+		stList * delRunner = head;
+		while (delRunner != nullptr)
+		{
+			head = head->nextElem;
+			delete delRunner;
+			delRunner = head;
+		}
 	}
 	void write_back(int userData)
 	{
