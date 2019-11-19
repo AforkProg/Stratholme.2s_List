@@ -21,6 +21,10 @@ public:
 		stList * delRunner = head;
 		while (delRunner != nullptr)
 		{
+			if (size == 0)
+			{
+				return;
+			}
 			head = head->nextElem;
 			delete delRunner;
 			delRunner = head;
@@ -41,7 +45,7 @@ public:
 			newElem->prevElem = tail;
 			tail = newElem;
 		}
-		addIndexTail();
+		addIndexHead();
 	}
 	void write_front(int userData)
 	{
@@ -64,10 +68,21 @@ public:
 	void printAll()
 	{
 		stList * counter = head;
-		while (counter != nullptr)
+		if (counter== nullptr)
 		{
-			cout << counter->index << "  --  " << counter->data << endl;
-			counter = counter->nextElem;
+			return;
+		}
+		else if (size == 0)
+		{
+			cout << "В списке нет элементов" << endl;
+		}
+		else
+		{
+			while (counter != nullptr)
+			{
+ 				cout << counter->index << "  --  " << counter->data << endl;
+				counter = counter->nextElem;
+			}
 		}
 	}
 	void printByIndex(int userIndex) // Решил немного поэкспериментировать с этой функцией
@@ -113,13 +128,33 @@ public:
 			delRunner = head;
 		}
 	}
-	void deleteByIndex(int userIndex)
+	void deleteByIndex(unsigned int userIndex)
 	{
 		stList * delRunner = head;
-		if (userIndex == 1)
+		
+		if (userIndex == 0 || userIndex > size)
+		{
+			cout << "error 404 not found" << endl;
+		}
+		else if (size == 1)
+		{
+			delete delRunner;
+			size--;
+		}
+		else if (userIndex == 1)
 		{
 			head = head->nextElem;
 			delete delRunner;
+			head->prevElem = nullptr;
+			size--;
+		}
+		else if (userIndex == size)
+		{
+			delRunner = tail;
+			tail = tail->prevElem;
+			delete delRunner;
+			tail->nextElem = nullptr;
+			size--;
 		}
 		else
 		{
@@ -131,6 +166,7 @@ public:
 					stList * remove = delRunner->nextElem;
 					delRunner->nextElem = delRunner->nextElem->nextElem;
 					delete remove;
+					size--;
 					break;
 				}
 				counter++;
@@ -138,7 +174,7 @@ public:
 			}
 		}
 	}
-	void changeIndex(int userIndex, int userData)
+	void changeByIndex(int userIndex, int userData)
 	{
 		stList * elemChanger = head;
 		int counter = 1;
@@ -174,30 +210,46 @@ private:
 		}
 		size++;
 	}
-	void addIndexTail()
-	{
-		stList * newElem_T = head;
-		int counter = 1;
-		while (newElem_T != nullptr)
-		{
-			newElem_T->index = counter;
-			++counter;
-			newElem_T = newElem_T->nextElem;
-		}
-		size++;
-	}
 };
+
+/*
+error 1: 
+	desc: 
+		tail не указывает на предыдущий элемент после удаления последнего элемента.
+	example:
+		void error_example_1(){
+			clList Stratholm;
+			Stratholm.write_back(1);
+			Stratholm.write_back(2);
+			Stratholm.deleteByIndex(2);
+		}
+
+error 2:
+		void deleteByIndex(int userIndex{
+		...
+		if (userIndex == 1)
+		{
+			head = head->nextElem; <----------
+			delete delRunner;
+		}
+		...
+	desc:
+		отсутствует проверка на то, что head == nullptr
+	example:
+		void error_example_2(){
+			clList Stratholm;
+			Stratholm.deleteByIndex(1);
+		}
+
+в чем разница между addIndexTail() и addIndexHead()
+*/
 int main()
 {
 	setlocale(LC_ALL, "russian");
 	clList Stratholm;
 	Stratholm.write_back(1);
 	Stratholm.write_back(2);
-	Stratholm.write_back(3);
-	Stratholm.write_back(4);
-	Stratholm.write_back(5);
-	Stratholm.changeIndex(2, 22);
-	Stratholm.printAll();
+	Stratholm.deleteByIndex(2);
 	system("pause");
 	return 0;
 }
